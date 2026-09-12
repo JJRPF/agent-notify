@@ -1,6 +1,6 @@
 {
-  "last_processed_command_id": "E6NbJhlnisiM",
-  "last_checked": "2026-09-12T19:47:22Z",
+  "last_processed_command_id": "V1DxbPj9jbEI",
+  "last_checked": "2026-09-12T21:36:13Z",
   "monitors": {
     "omarchy-pr380": {
       "state": "open",
@@ -9,20 +9,20 @@
       "title": "fix(bluetooth): power off adapters via BlueZ before rfkill block to prevent PCIe driver lockup"
     },
     "quattro-vm": {
-      "run_id": 34690053617,
+      "run_id": 34718490282,
       "conclusion": "success"
     },
     "quattro-commits": {
-      "sha": "3246b6b4d84fd5339b4c5e8576a23d5199f7087a",
-      "message": "Repair missing zram configuration before activating swap (#387)"
+      "sha": "7a365d05018561846c660c56c7e5a3e8e4b8e913",
+      "message": "Relax command metadata summary enforcement for metadata-free legacy binaries (#426)"
     },
     "pr380-vm": {
-      "run_id": 34710402171,
-      "conclusion": "failure"
+      "run_id": 34718614970,
+      "conclusion": "success"
     },
     "upstream-vm": {
-      "run_id": 34714446590,
-      "conclusion": "failure"
+      "run_id": 34718682505,
+      "conclusion": "success"
     }
   }
 }
