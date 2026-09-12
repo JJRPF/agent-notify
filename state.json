@@ -1,12 +1,12 @@
 {
-  "last_processed_command_id": "XffUHSCFOg6d",
-  "last_checked": "2026-09-12T19:20:55Z",
+  "last_processed_command_id": "TmNIkk1U5FsI",
+  "last_checked": "2026-09-12T19:38:55Z",
   "monitors": {
     "omarchy-pr380": {
       "state": "open",
       "merged": false,
       "comments": 4,
-      "title": "fix(bluetooth): power off adapters via BlueZ before rfkill block"
+      "title": "fix(bluetooth): power off adapters via BlueZ before rfkill block to prevent PCIe driver lockup"
     },
     "quattro-vm": {
       "run_id": 34690053617,
