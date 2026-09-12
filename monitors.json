@@ -32,5 +32,13 @@
     "repo": "omacom/omarchy-mac",
     "workflow": "install-vm.yml",
     "branch": "fix/bluetooth-graceful-poweroff"
+  },
+  {
+    "id": "upstream-vm",
+    "name": "Latest Overall Install VM",
+    "type": "github_workflow",
+    "enabled": true,
+    "repo": "omacom/omarchy-mac",
+    "workflow": "install-vm.yml"
   }
 ]
