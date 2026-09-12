@@ -1,0 +1,55 @@
+name: Omarchy Watcher
+
+on:
+  schedule:
+    # Run every 20 minutes (72 checks per day)
+    - cron: '*/20 * * * *'
+  workflow_dispatch:
+    inputs:
+      test_notification:
+        description: 'Send a test push notification to verify phone connectivity'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    name: Check PR 380 & Upstream Quattro
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Send Test Notification (if requested)
+        if: ${{ inputs.test_notification }}
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC || vars.NTFY_TOPIC || 'jjr-omarchy-pr380' }}
+        run: |
+          curl -s \
+            -H "Title: Test Ping from Omarchy Watcher" \
+            -H "Priority: high" \
+            -H "Tags: bell,apple" \
+            -H "Click: https://github.com/omacom/omarchy-mac/pull/380" \
+            -d "Cloud watcher is connected and sending push notifications." \
+            "https://ntfy.sh/$NTFY_TOPIC"
+
+      - name: Run Status Check
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC || vars.NTFY_TOPIC || 'jjr-omarchy-pr380' }}
+        run: |
+          chmod +x scripts/check.sh
+          ./scripts/check.sh
+
+      - name: Commit Updated State
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add state.json
+          git commit -m "chore: update watcher state [skip ci]"
+          git push

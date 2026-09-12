@@ -1,0 +1,12 @@
+{
+  "quattro_sha": "3246b6b4d84fd5339b4c5e8576a23d5199f7087a",
+  "quattro_msg": "Repair missing zram configuration before activating swap (#387)",
+  "quattro_vm_id": 34690053617,
+  "quattro_vm_conclusion": "success",
+  "latest_vm_id": 34712326831,
+  "latest_vm_conclusion": "failure",
+  "pr_state": "open",
+  "pr_merged": false,
+  "pr_comments": 4,
+  "last_checked": "2026-09-12T19:19:57Z"
+}
