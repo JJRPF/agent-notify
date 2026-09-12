@@ -17,7 +17,7 @@ CONFIG_PATH = os.path.expanduser("~/.config/agent-notify/config.json")
 
 def load_config():
     defaults = {
-        "ntfy_topic": "jjr-omarchy-pr380",
+        "ntfy_topic": "agent-notify",
         "ntfy_server": "https://ntfy.sh",
         "desktop_notifications": True,
         "repo_path": os.path.expanduser("~/Work/agent-notify")
@@ -91,7 +91,7 @@ def cmd_send(args, config):
 
     if not args.desktop_only:
         server = config.get("ntfy_server", "https://ntfy.sh")
-        topic = args.topic or config.get("ntfy_topic", "jjr-omarchy-pr380")
+        topic = args.topic or config.get("ntfy_topic", "agent-notify")
         phone_sent = send_phone_notification(server, topic, title, message, priority, tags, click)
 
     delivery = []

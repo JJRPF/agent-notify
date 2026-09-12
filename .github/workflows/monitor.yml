@@ -35,7 +35,7 @@ jobs:
       - name: Send Test Notification (if requested)
         if: ${{ inputs.test_notification }}
         env:
-          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC || vars.NTFY_TOPIC || 'jjr-omarchy-pr380' }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC || vars.NTFY_TOPIC || 'agent-notify' }}
         run: |
           curl -s \
             -H "Title: Test Ping from Agent-Notify" \
@@ -49,7 +49,7 @@ jobs:
         id: check
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC || vars.NTFY_TOPIC || 'jjr-omarchy-pr380' }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC || vars.NTFY_TOPIC || 'agent-notify' }}
         run: |
           chmod +x scripts/check.sh
           ./scripts/check.sh

@@ -13,7 +13,7 @@ An extensible, 24/7 notification hub and cloud monitor for developers and autono
 1. Install the free **ntfy** app on iOS (App Store) or Android (Google Play / F-Droid), or open [ntfy.sh](https://ntfy.sh) in any browser.
 2. Subscribe to your topic:
    ```text
-   jjr-omarchy-pr380
+   agent-notify
    ```
    *(Or your custom topic set in `NTFY_TOPIC`)*.
 

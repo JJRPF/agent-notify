@@ -13,7 +13,7 @@ import urllib.request
 import urllib.error
 from datetime import datetime, timezone
 
-TOPIC = os.getenv("NTFY_TOPIC", "jjr-omarchy-pr380")
+TOPIC = os.getenv("NTFY_TOPIC", "agent-notify")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 MONITORS_FILE = os.getenv("MONITORS_FILE", "monitors.json")
 STATE_FILE = os.getenv("STATE_FILE", "state.json")
