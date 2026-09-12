@@ -23,5 +23,14 @@
     "repo": "omacom/omarchy-mac",
     "branch": "quattro",
     "enabled": true
+  },
+  {
+    "id": "pr380-vm",
+    "name": "PR #380 Install VM",
+    "type": "github_workflow",
+    "enabled": true,
+    "repo": "omacom/omarchy-mac",
+    "workflow": "install-vm.yml",
+    "branch": "fix/bluetooth-graceful-poweroff"
   }
 ]
