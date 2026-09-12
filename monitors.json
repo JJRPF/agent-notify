@@ -1,0 +1,27 @@
+[
+  {
+    "id": "omarchy-pr380",
+    "name": "Omarchy Bluetooth Poweroff PR #380",
+    "type": "github_pr",
+    "repo": "omacom/omarchy-mac",
+    "pr": 380,
+    "enabled": true
+  },
+  {
+    "id": "quattro-vm",
+    "name": "Omarchy Quattro Install VM Workflow",
+    "type": "github_workflow",
+    "repo": "omacom/omarchy-mac",
+    "workflow": "install-vm.yml",
+    "branch": "quattro",
+    "enabled": true
+  },
+  {
+    "id": "quattro-commits",
+    "name": "Omarchy Quattro Branch Commits",
+    "type": "github_branch",
+    "repo": "omacom/omarchy-mac",
+    "branch": "quattro",
+    "enabled": true
+  }
+]
