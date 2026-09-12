@@ -1,0 +1,346 @@
+#!/usr/bin/env python3
+"""
+agent-notify CLI: Send push & desktop alerts, and manage 24/7 cloud monitors.
+"""
+
+import argparse
+import json
+import os
+import shutil
+import subprocess
+import sys
+import urllib.request
+import urllib.error
+
+CONFIG_PATH = os.path.expanduser("~/.config/agent-notify/config.json")
+
+
+def load_config():
+    defaults = {
+        "ntfy_topic": "jjr-omarchy-pr380",
+        "ntfy_server": "https://ntfy.sh",
+        "desktop_notifications": True,
+        "repo_path": os.path.expanduser("~/Work/agent-notify")
+    }
+    if os.path.exists(CONFIG_PATH):
+        try:
+            with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+                loaded = json.load(f)
+                defaults.update(loaded)
+        except Exception as e:
+            print(f"Warning: Could not read {CONFIG_PATH}: {e}", file=sys.stderr)
+    return defaults
+
+
+def send_desktop_notification(title, message, priority="default"):
+    notify_send = shutil.which("notify-send")
+    if not notify_send:
+        return False
+
+    urgency = "normal"
+    if priority in ("high", "urgent", "max"):
+        urgency = "critical"
+    elif priority in ("low", "min"):
+        urgency = "low"
+
+    try:
+        subprocess.run(
+            [notify_send, "-u", urgency, "-a", "agent-notify", title, message],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False
+        )
+        return True
+    except Exception:
+        return False
+
+
+def send_phone_notification(server, topic, title, message, priority="default", tags="robot", click=None):
+    url = f"{server.rstrip('/')}/{topic}"
+    headers = {
+        "Title": title,
+        "Priority": priority,
+        "Tags": tags,
+        "User-Agent": "agent-notify-cli/1.0"
+    }
+    if click:
+        headers["Click"] = click
+
+    data = message.encode("utf-8")
+    req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return resp.status == 200
+    except Exception as e:
+        print(f"Error sending phone notification: {e}", file=sys.stderr)
+        return False
+
+
+def cmd_send(args, config):
+    title = args.title or "Agent Alert"
+    message = args.message or ""
+    priority = args.priority or "default"
+    tags = args.tags or "robot"
+    click = args.click
+
+    desktop_sent = False
+    phone_sent = False
+
+    if not args.phone_only and config.get("desktop_notifications", True):
+        desktop_sent = send_desktop_notification(title, message, priority)
+
+    if not args.desktop_only:
+        server = config.get("ntfy_server", "https://ntfy.sh")
+        topic = args.topic or config.get("ntfy_topic", "jjr-omarchy-pr380")
+        phone_sent = send_phone_notification(server, topic, title, message, priority, tags, click)
+
+    delivery = []
+    if phone_sent:
+        delivery.append(f"phone ({config.get('ntfy_topic')})")
+    if desktop_sent:
+        delivery.append("desktop")
+
+    if delivery:
+        print(f"✓ Alert sent via {', '.join(delivery)}: [{title}] {message}")
+    else:
+        print("Notice: Notification attempted, but no delivery channel confirmed.")
+
+
+def get_repo_monitors_path(config):
+    repo_path = os.path.expanduser(config.get("repo_path", "~/Work/agent-notify"))
+    monitors_file = os.path.join(repo_path, "monitors.json")
+    if not os.path.exists(monitors_file):
+        print(f"Error: monitors.json not found at {monitors_file}", file=sys.stderr)
+        sys.exit(1)
+    return repo_path, monitors_file
+
+
+def git_commit_and_push(repo_path, commit_msg):
+    try:
+        subprocess.run(["git", "-C", repo_path, "add", "monitors.json"], check=True)
+        # Check if there are changes to commit
+        status = subprocess.run(["git", "-C", repo_path, "status", "--porcelain"], capture_output=True, text=True, check=True)
+        if not status.stdout.strip():
+            print("No changes to commit.")
+            return True
+
+        subprocess.run(["git", "-C", repo_path, "commit", "-m", commit_msg], check=True)
+        subprocess.run(["git", "-C", repo_path, "push", "origin", "main"], check=True)
+        print("✓ Pushed updates to GitHub cloud watcher.")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"Error pushing git updates: {e}", file=sys.stderr)
+        return False
+
+
+def cmd_watch_list(args, config):
+    _, monitors_file = get_repo_monitors_path(config)
+    with open(monitors_file, "r", encoding="utf-8") as f:
+        monitors = json.load(f)
+
+    print(f"\nActive Cloud Monitors ({len(monitors)} targets in {monitors_file}):")
+    print("-" * 65)
+    for m in monitors:
+        enabled = m.get("enabled", True)
+        status_str = "🟢 ACTIVE" if enabled else "⚪ MUTED "
+        m_id = m.get("id")
+        m_type = m.get("type")
+        m_name = m.get("name", m_id)
+
+        details = ""
+        if m_type == "github_pr":
+            details = f"{m.get('repo')} PR #{m.get('pr')}"
+        elif m_type == "github_workflow":
+            details = f"{m.get('repo')} ({m.get('workflow')} @ {m.get('branch', 'default')})"
+        elif m_type == "github_branch":
+            details = f"{m.get('repo')} branch {m.get('branch')}"
+        elif m_type == "http_ping":
+            details = m.get("url")
+
+        print(f"[{status_str}] {m_id:<18} | {m_type:<15} | {details}")
+    print("-" * 65)
+
+
+def cmd_watch_toggle(args, config, enable_status):
+    repo_path, monitors_file = get_repo_monitors_path(config)
+    with open(monitors_file, "r", encoding="utf-8") as f:
+        monitors = json.load(f)
+
+    target_id = args.id.strip().lower()
+    matched = None
+    for m in monitors:
+        if m.get("id", "").lower() == target_id or str(m.get("pr", "")) == target_id:
+            m["enabled"] = enable_status
+            matched = m
+            break
+
+    if not matched:
+        print(f"Error: Monitor '{args.id}' not found.", file=sys.stderr)
+        sys.exit(1)
+
+    with open(monitors_file, "w", encoding="utf-8") as f:
+        json.dump(monitors, f, indent=2)
+        f.write("\n")
+
+    action = "enable" if enable_status else "mute"
+    print(f"✓ Set {matched['id']} to {'ACTIVE' if enable_status else 'MUTED'}.")
+    git_commit_and_push(repo_path, f"chore: {action} monitor {matched['id']}")
+
+
+def cmd_watch_remove(args, config):
+    repo_path, monitors_file = get_repo_monitors_path(config)
+    with open(monitors_file, "r", encoding="utf-8") as f:
+        monitors = json.load(f)
+
+    target_id = args.id.strip().lower()
+    new_monitors = [m for m in monitors if m.get("id", "").lower() != target_id and str(m.get("pr", "")) != target_id]
+
+    if len(new_monitors) == len(monitors):
+        print(f"Error: Monitor '{args.id}' not found.", file=sys.stderr)
+        sys.exit(1)
+
+    with open(monitors_file, "w", encoding="utf-8") as f:
+        json.dump(new_monitors, f, indent=2)
+        f.write("\n")
+
+    print(f"✓ Removed monitor '{args.id}'.")
+    git_commit_and_push(repo_path, f"chore: remove monitor {args.id}")
+
+
+def cmd_watch_add(args, config):
+    repo_path, monitors_file = get_repo_monitors_path(config)
+    with open(monitors_file, "r", encoding="utf-8") as f:
+        monitors = json.load(f)
+
+    m_id = args.id
+    if any(m.get("id") == m_id for m in monitors):
+        print(f"Error: Monitor ID '{m_id}' already exists.", file=sys.stderr)
+        sys.exit(1)
+
+    new_entry = {
+        "id": m_id,
+        "name": args.name or m_id,
+        "type": args.type,
+        "enabled": True
+    }
+
+    if args.type == "github_pr":
+        if not args.repo or not args.pr:
+            print("Error: --repo and --pr are required for github_pr", file=sys.stderr)
+            sys.exit(1)
+        new_entry["repo"] = args.repo
+        new_entry["pr"] = int(args.pr)
+    elif args.type == "github_workflow":
+        if not args.repo or not args.workflow:
+            print("Error: --repo and --workflow are required for github_workflow", file=sys.stderr)
+            sys.exit(1)
+        new_entry["repo"] = args.repo
+        new_entry["workflow"] = args.workflow
+        if args.branch:
+            new_entry["branch"] = args.branch
+    elif args.type == "github_branch":
+        if not args.repo or not args.branch:
+            print("Error: --repo and --branch are required for github_branch", file=sys.stderr)
+            sys.exit(1)
+        new_entry["repo"] = args.repo
+        new_entry["branch"] = args.branch
+    elif args.type == "http_ping":
+        if not args.url:
+            print("Error: --url is required for http_ping", file=sys.stderr)
+            sys.exit(1)
+        new_entry["url"] = args.url
+        new_entry["expected_status"] = int(args.expected_status or 200)
+
+    monitors.append(new_entry)
+
+    with open(monitors_file, "w", encoding="utf-8") as f:
+        json.dump(monitors, f, indent=2)
+        f.write("\n")
+
+    print(f"✓ Added monitor '{m_id}' ({args.type}).")
+    git_commit_and_push(repo_path, f"feat: add monitor {m_id}")
+
+
+def main():
+    config = load_config()
+
+    # Convenience shortcut: if invoked like `agent-notify "message text"`, send immediately
+    if len(sys.argv) == 2 and not sys.argv[1].startswith("-") and sys.argv[1] not in ("watch", "send", "help"):
+        args = argparse.Namespace(
+            title="Agent Alert",
+            message=sys.argv[1],
+            priority="default",
+            tags="robot",
+            click=None,
+            desktop_only=False,
+            phone_only=False,
+            topic=None
+        )
+        cmd_send(args, config)
+        return
+
+    parser = argparse.ArgumentParser(prog="agent-notify", description="Send alerts and manage 24/7 cloud monitors.")
+    subparsers = parser.add_subparsers(dest="command")
+
+    # Send parser
+    p_send = subparsers.add_parser("send", help="Send a push/desktop notification")
+    p_send.add_argument("-t", "--title", default="Agent Alert", help="Notification title")
+    p_send.add_argument("-m", "--message", required=True, help="Notification body message")
+    p_send.add_argument("-p", "--priority", default="default", choices=["min", "low", "default", "high", "urgent", "max"], help="Notification priority")
+    p_send.add_argument("--tags", default="robot", help="Comma-separated emoji tags (e.g. robot,bell,tada)")
+    p_send.add_argument("--click", help="URL opened when tapping notification")
+    p_send.add_argument("--topic", help="Override ntfy topic")
+    p_send.add_argument("--desktop-only", action="store_true", help="Send desktop notification only")
+    p_send.add_argument("--phone-only", action="store_true", help="Send phone push notification only")
+
+    # Watch parser
+    p_watch = subparsers.add_parser("watch", help="Manage 24/7 cloud monitors")
+    watch_sub = p_watch.add_subparsers(dest="watch_action")
+
+    # watch list
+    watch_sub.add_parser("list", help="List all cloud monitors")
+
+    # watch enable / disable
+    p_w_en = watch_sub.add_parser("enable", help="Resume alerts for a monitor")
+    p_w_en.add_argument("id", help="Monitor ID or PR number")
+
+    p_w_dis = watch_sub.add_parser("disable", help="Mute alerts for a monitor")
+    p_w_dis.add_argument("id", help="Monitor ID or PR number")
+
+    # watch remove
+    p_w_rm = watch_sub.add_parser("remove", help="Delete a monitor completely")
+    p_w_rm.add_argument("id", help="Monitor ID or PR number")
+
+    # watch add
+    p_w_add = watch_sub.add_parser("add", help="Add a new cloud monitor")
+    p_w_add.add_argument("type", choices=["github_pr", "github_workflow", "github_branch", "http_ping"], help="Monitor type")
+    p_w_add.add_argument("--id", required=True, help="Unique identifier for the monitor")
+    p_w_add.add_argument("--name", help="Human-readable description")
+    p_w_add.add_argument("--repo", help="Target GitHub repo (owner/repo)")
+    p_w_add.add_argument("--pr", type=int, help="PR number (for github_pr)")
+    p_w_add.add_argument("--workflow", help="Workflow filename, e.g. install-vm.yml (for github_workflow)")
+    p_w_add.add_argument("--branch", help="Git branch name")
+    p_w_add.add_argument("--url", help="HTTP URL to ping")
+    p_w_add.add_argument("--expected-status", type=int, default=200, help="Expected HTTP status (for http_ping)")
+
+    args = parser.parse_args()
+
+    if args.command == "send":
+        cmd_send(args, config)
+    elif args.command == "watch":
+        if args.watch_action == "list" or not args.watch_action:
+            cmd_watch_list(args, config)
+        elif args.watch_action == "enable":
+            cmd_watch_toggle(args, config, True)
+        elif args.watch_action in ("disable", "mute"):
+            cmd_watch_toggle(args, config, False)
+        elif args.watch_action == "remove":
+            cmd_watch_remove(args, config)
+        elif args.watch_action == "add":
+            cmd_watch_add(args, config)
+    else:
+        parser.print_help()
+
+
+if __name__ == "__main__":
+    main()
