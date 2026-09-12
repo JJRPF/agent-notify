@@ -1,6 +1,6 @@
 {
-  "last_processed_command_id": "6yxAtUrHKtjM",
-  "last_checked": "2026-09-12T19:44:18Z",
+  "last_processed_command_id": "E6NbJhlnisiM",
+  "last_checked": "2026-09-12T19:47:22Z",
   "monitors": {
     "omarchy-pr380": {
       "state": "open",
@@ -15,6 +15,14 @@
     "quattro-commits": {
       "sha": "3246b6b4d84fd5339b4c5e8576a23d5199f7087a",
       "message": "Repair missing zram configuration before activating swap (#387)"
+    },
+    "pr380-vm": {
+      "run_id": 34710402171,
+      "conclusion": "failure"
+    },
+    "upstream-vm": {
+      "run_id": 34714446590,
+      "conclusion": "failure"
     }
   }
 }
