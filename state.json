@@ -1,6 +1,6 @@
 {
   "last_processed_command_id": "V1DxbPj9jbEI",
-  "last_checked": "2026-09-12T21:36:13Z",
+  "last_checked": "2026-09-13T01:04:28Z",
   "monitors": {
     "omarchy-pr380": {
       "state": "open",
@@ -17,12 +17,12 @@
       "message": "Relax command metadata summary enforcement for metadata-free legacy binaries (#426)"
     },
     "pr380-vm": {
-      "run_id": 34718614970,
+      "run_id": 34721258406,
       "conclusion": "success"
     },
     "upstream-vm": {
-      "run_id": 34718682505,
-      "conclusion": "success"
+      "run_id": 34725679588,
+      "conclusion": "failure"
     }
   }
 }
