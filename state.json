@@ -1,6 +1,6 @@
 {
   "last_processed_command_id": "V1DxbPj9jbEI",
-  "last_checked": "2026-09-13T11:55:53Z",
+  "last_checked": "2026-09-13T18:19:22Z",
   "monitors": {
     "omarchy-pr380": {
       "state": "open",
@@ -9,19 +9,19 @@
       "title": "fix(bluetooth): power off adapters via BlueZ before rfkill block to prevent PCIe driver lockup"
     },
     "quattro-vm": {
-      "run_id": 34751419020,
+      "run_id": 34771478571,
       "conclusion": "success"
     },
     "quattro-commits": {
-      "sha": "7a365d05018561846c660c56c7e5a3e8e4b8e913",
-      "message": "Relax command metadata summary enforcement for metadata-free legacy binaries (#426)"
+      "sha": "04862a02c556b5c4305b2ea3430e9d2cfaab66c4",
+      "message": "Prepare 4.0.3rc4 trust bootstrap (#435)"
     },
     "pr380-vm": {
       "run_id": 34721258406,
       "conclusion": "success"
     },
     "upstream-vm": {
-      "run_id": 34751419020,
+      "run_id": 34773228334,
       "conclusion": "success"
     }
   }
