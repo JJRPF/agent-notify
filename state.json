@@ -1,6 +1,6 @@
 {
   "last_processed_command_id": "V1DxbPj9jbEI",
-  "last_checked": "2026-09-23T13:16:00Z",
+  "last_checked": "2026-09-23T17:52:02Z",
   "monitors": {
     "omarchy-pr380": {
       "state": "open",
@@ -9,20 +9,20 @@
       "title": "fix(bluetooth): power off adapters via BlueZ before rfkill block to prevent PCIe driver lockup"
     },
     "quattro-vm": {
-      "run_id": 35846002861,
+      "run_id": 35876572978,
       "conclusion": "success"
     },
     "quattro-commits": {
-      "sha": "90438bceab9601b0181e65bc47180d1fb1d34496",
-      "message": "Guard keyring publication before migrations (#457)"
+      "sha": "e77295a9f8abd381bf54750dab0f71d552f937f1",
+      "message": "Fix recurring first-run update prompts on Mac (#432)"
     },
     "pr380-vm": {
       "run_id": 34721258406,
       "conclusion": "success"
     },
     "upstream-vm": {
-      "run_id": 35863806110,
-      "conclusion": "success"
+      "run_id": 35897616658,
+      "conclusion": "in_progress"
     }
   }
 }
