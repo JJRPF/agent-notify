@@ -1,6 +1,6 @@
 {
   "last_processed_command_id": "V1DxbPj9jbEI",
-  "last_checked": "2026-09-23T17:52:02Z",
+  "last_checked": "2026-09-23T20:52:50Z",
   "monitors": {
     "omarchy-pr380": {
       "state": "open",
@@ -21,8 +21,8 @@
       "conclusion": "success"
     },
     "upstream-vm": {
-      "run_id": 35897616658,
-      "conclusion": "in_progress"
+      "run_id": 35899892193,
+      "conclusion": "success"
     }
   }
 }
