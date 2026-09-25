@@ -1,6 +1,6 @@
 {
   "last_processed_command_id": "V1DxbPj9jbEI",
-  "last_checked": "2026-09-23T20:52:50Z",
+  "last_checked": "2026-09-25T13:50:25Z",
   "monitors": {
     "omarchy-pr380": {
       "state": "open",
@@ -9,19 +9,19 @@
       "title": "fix(bluetooth): power off adapters via BlueZ before rfkill block to prevent PCIe driver lockup"
     },
     "quattro-vm": {
-      "run_id": 35876572978,
+      "run_id": 36122565033,
       "conclusion": "success"
     },
     "quattro-commits": {
-      "sha": "e77295a9f8abd381bf54750dab0f71d552f937f1",
-      "message": "Fix recurring first-run update prompts on Mac (#432)"
+      "sha": "ba546a61f881c1fe9d79d75ec050eab048b8cb63",
+      "message": "Hand off Steam launcher ownership to FEX package (#511)"
     },
     "pr380-vm": {
       "run_id": 34721258406,
       "conclusion": "success"
     },
     "upstream-vm": {
-      "run_id": 35899892193,
+      "run_id": 36122565033,
       "conclusion": "success"
     }
   }
