@@ -1,6 +1,6 @@
 {
   "last_processed_command_id": "m2kncSF9f0cL",
-  "last_checked": "2026-11-03T08:31:32Z",
+  "last_checked": "2026-11-03T16:29:12Z",
   "monitors": {
     "omarchy-pr380": {
       "state": "open",
@@ -9,20 +9,20 @@
       "title": "fix(bluetooth): power off adapters via BlueZ before rfkill block to prevent PCIe driver lockup"
     },
     "quattro-vm": {
-      "run_id": 37773923474,
+      "run_id": 41630666152,
       "conclusion": "success"
     },
     "quattro-commits": {
-      "sha": "ba546a61f881c1fe9d79d75ec050eab048b8cb63",
-      "message": "Hand off Steam launcher ownership to FEX package (#511)"
+      "sha": "7cb792ebafe08505f2617b28bb866da4732d3c1a",
+      "message": "Merge pull request #787 from joshuaswarren/fix/arm-edge-hyprland-only-pin"
     },
     "pr380-vm": {
       "run_id": 34721258406,
       "conclusion": "success"
     },
     "upstream-vm": {
-      "run_id": 41570173349,
-      "conclusion": "failure"
+      "run_id": 41645367051,
+      "conclusion": "success"
     }
   }
 }
