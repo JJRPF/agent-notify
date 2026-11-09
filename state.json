@@ -1,6 +1,6 @@
 {
   "last_processed_command_id": "gEmE0HhiD493",
-  "last_checked": "2026-11-08T16:52:06Z",
+  "last_checked": "2026-11-09T00:21:21Z",
   "monitors": {
     "omarchy-pr380": {
       "state": "open",
@@ -13,8 +13,8 @@
       "conclusion": "success"
     },
     "quattro-commits": {
-      "sha": "7cb792ebafe08505f2617b28bb866da4732d3c1a",
-      "message": "Merge pull request #787 from joshuaswarren/fix/arm-edge-hyprland-only-pin"
+      "sha": "667500c5eefab78424af66350f5ea7bf40fdede6",
+      "message": "Merge pull request #797 from omacom/docs/readme-installer-app"
     },
     "pr380-vm": {
       "run_id": 34721258406,
