@@ -1,6 +1,6 @@
 {
-  "last_processed_command_id": "FNJFqzQdrCzA",
-  "last_checked": "2026-11-22T02:37:11Z",
+  "last_processed_command_id": "KktjLnegCeCt",
+  "last_checked": "2026-11-22T10:14:03Z",
   "monitors": {
     "omarchy-pr380": {
       "state": "closed",
@@ -13,8 +13,8 @@
       "conclusion": "success"
     },
     "quattro-commits": {
-      "sha": "667500c5eefab78424af66350f5ea7bf40fdede6",
-      "message": "Merge pull request #797 from omacom/docs/readme-installer-app"
+      "sha": "5ccd72e5fc236b256433a55ad4c409c0e2f2a40f",
+      "message": "Freeze Omarchy Mac installs and point them to Omarchy for Apple Silicon (#804)"
     },
     "pr380-vm": {
       "run_id": 34721258406,
